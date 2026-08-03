@@ -10,71 +10,136 @@ import {
 
 const menuItems = [
   {
-    icon: <House size={20} />,
+    icon: House,
     title: "Trang chủ",
     active: true,
   },
   {
-    icon: <Compass size={20} />,
+    icon: Compass,
     title: "Khám phá",
   },
   {
-    icon: <Heart size={20} />,
+    icon: Heart,
     title: "Yêu thích",
   },
   {
-    icon: <CalendarDays size={20} />,
+    icon: CalendarDays,
     title: "Tạo lịch trình",
   },
   {
-    icon: <Map size={20} />,
+    icon: Map,
     title: "Bản đồ",
   },
   {
-    icon: <Users size={20} />,
+    icon: Users,
     title: "Lịch trình nhóm",
   },
   {
-    icon: <Info size={20} />,
+    icon: Info,
     title: "Giới thiệu",
   },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ collapsed }) {
   return (
-    <aside className="w-64 h-screen bg-white border-r shadow-sm flex flex-col">
+    <aside
+      className={`
+        bg-white
+        border-r
+        shadow-sm
+        flex
+        flex-col
+        transition-all
+        duration-300
+        ${collapsed ? "w-20" : "w-64"}
+      `}
+    >
 
       {/* Logo */}
+
       <div className="h-20 flex items-center justify-center border-b">
-        <h1 className="text-2xl font-bold text-orange-500">
-          Travel Planner
-        </h1>
+
+        {collapsed ? (
+
+          <img
+            src="/logo.png"
+            alt="logo"
+            className="w-10 h-10"
+          />
+
+        ) : (
+
+          <div className="flex items-center gap-3">
+
+            <img
+              src="/logo.png"
+              alt="logo"
+              className="w-10 h-10"
+            />
+
+            <h1 className="text-2xl font-bold text-orange-500">
+              Travel Planner
+            </h1>
+
+          </div>
+
+        )}
+
       </div>
 
       {/* Menu */}
+
       <div className="flex-1 py-4">
 
-        {menuItems.map((item, index) => (
-          <button
-            key={index}
-            className={`w-full flex items-center gap-3 px-6 py-3 transition
-            ${
-              item.active
-                ? "bg-orange-100 text-orange-500 font-semibold"
-                : "hover:bg-gray-100"
-            }`}
-          >
-            {item.icon}
-            <span>{item.title}</span>
-          </button>
-        ))}
+        {menuItems.map((item, index) => {
+
+          const Icon = item.icon;
+
+          return (
+
+            <button
+              key={index}
+              className={`
+              w-full
+              flex
+              items-center
+              ${collapsed ? "justify-center" : "gap-3 px-6"}
+              py-3
+              transition
+              ${
+                item.active
+                  ? "bg-orange-100 text-orange-500 font-semibold"
+                  : "hover:bg-gray-100"
+              }
+            `}
+            >
+
+              <Icon size={22} />
+
+              {!collapsed && (
+                <span>{item.title}</span>
+              )}
+
+            </button>
+
+          );
+
+        })}
 
       </div>
 
       {/* Footer */}
-      <div className="p-5 border-t text-sm text-gray-400 text-center">
-        Travel Planner © 2026
-      </div>
+
+      {!collapsed && (
+
+        <div className="p-5 border-t text-center text-sm text-gray-400">
+
+          Travel Planner © 2026
+
+        </div>
+
+      )}
+
     </aside>
   );
 }

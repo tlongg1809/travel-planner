@@ -1,54 +1,87 @@
-import { Search, MapPin, UserCircle2 } from "lucide-react";
+import {
+  Search,
+  MapPin,
+  UserCircle2,
+  Menu,
+} from "lucide-react";
 
-export default function Header() {
+export default function Header({
+
+  collapsed,
+  setCollapsed,
+
+}) {
   return (
-    <header className="w-full h-20 bg-white border-b shadow-sm">
-      <div className="max-w-7xl mx-auto h-full flex items-center justify-between px-6">
 
-        {/* Logo */}
-        <div className="flex items-center gap-3">
-          <img
-            src="/logo.png"
-            alt="Logo"
-            className="w-10 h-10"
-          />
+    <header className="h-20 bg-white border-b shadow-sm">
 
-          <h1 className="text-2xl font-bold text-orange-500">
-            Travel Planner
-          </h1>
-        </div>
+      <div className="h-full flex items-center justify-between px-8">
 
-        {/* Search */}
-        <div className="flex items-center w-[450px] bg-gray-100 rounded-full px-4 py-2">
+        {/* Left */}
 
-          <Search size={18} className="text-gray-500" />
+        <div className="flex items-center gap-6">
 
-          <input
-            type="text"
-            placeholder="Tìm kiếm địa điểm..."
-            className="flex-1 ml-3 bg-transparent outline-none"
-          />
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="hover:bg-gray-100 rounded-lg p-2 transition"
+          >
+            <Menu size={24} />
+          </button>
+
+          {/* Search */}
+
+          <div className="flex items-center w-[450px] bg-gray-100 rounded-full px-4 py-2">
+
+            <Search
+              size={18}
+              className="text-gray-500"
+            />
+
+            <input
+              type="text"
+              placeholder="Tìm kiếm địa điểm..."
+              className="flex-1 ml-3 bg-transparent outline-none"
+            />
+
+          </div>
 
         </div>
 
         {/* Right */}
-        <div className="flex items-center gap-5">
 
-          <button className="flex items-center gap-2 border rounded-full px-4 py-2 hover:bg-gray-100 transition">
+        <div className="flex items-center gap-4">
 
-            <MapPin size={18} />
+          {/* City */}
 
-            <span>Cần Thơ</span>
+          <select className="border rounded-full px-4 py-2">
 
-          </button>
+            <option>Cần Thơ</option>
 
-          <button className="hover:text-orange-500 transition">
+          </select>
+
+          {/* District */}
+
+          <select className="border rounded-full px-4 py-2">
+
+            <option>Tất cả quận</option>
+
+          </select>
+
+          {/* Login */}
+
+          <button className="flex items-center gap-2 hover:text-orange-500 transition">
+
             <UserCircle2 size={34} />
+
+            <span>Đăng nhập</span>
+
           </button>
 
         </div>
 
       </div>
+
     </header>
+
   );
 }
