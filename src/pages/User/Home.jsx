@@ -120,6 +120,9 @@ export default function Home() {
                             <PlaceCard
                                 key={place.id}
                                 place={place}
+                                isFavorite={favoriteIds.includes(place.id)}
+                                onFavoriteChange={handleFavoriteChange}
+                                onRequireLogin={() => setOpenLogin(true)}
                             />
 
                         ))}

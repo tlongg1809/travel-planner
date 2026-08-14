@@ -4,9 +4,16 @@ import {
     Wallet,
     Star
 } from "lucide-react";
+import { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import { toggleFavoritePlace } from "../../services/favoriteService";
 
 
-function PlaceCard({ place }) {
+function PlaceCard({ place, isFavorite = false, onFavoriteChange, onRequireLogin }) {
+
+    const { user, isAuthenticated } = useAuth();
+    const [liked, setLiked] = useState(isFavorite);
+    const [loading, setLoading] = useState(false);
 
     const imageUrl = place.hinhanh
     ? `http://localhost/travel-planner/backend/uploads/${place.hinhanh}`
@@ -26,9 +33,38 @@ function PlaceCard({ place }) {
         : [];
 
 
+    /**
+     * Xử lý click nút yêu thích
+     * - Chưa đăng nhập → xám, click không làm gì (hoặc mở modal nếu muốn)
+     * - Đã đăng nhập → toggle trạng thái yêu thích qua API
+     */
+    const handleToggleFavorite = async () => {
+
+        if (!isAuthenticated) {
+            // Chưa đăng nhập:  giữ xám, cliick sẽ mở form login
+             onRequireLogin?.();
+            return;
+        }
+
+        if (loading) return;
+
+        try {
+            setLoading(true);
+            const res = await toggleFavoritePlace(user.id, place.id);
+            const newState = res.data.favorite;
+            setLiked(newState);
+            onFavoriteChange?.(place.id, newState);
+        } catch (err) {
+            console.error("Lỗi toggle yêu thích:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     return (
 
-        <div className="group overflow-hidden rounded-2xl bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+        <div className="group overflow-hidden rounded-2xl bg-white shadow-sm transition hover:-translate-y-1 hover:-shadow-xl">
 
             {/* ================= HÌNH ẢNH ================= */}
 
@@ -45,12 +81,27 @@ function PlaceCard({ place }) {
 
                 <button
                     type="button"
-                    className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-md transition hover:bg-white"
+                    onClick={handleToggleFavorite}
+                    disabled={loading}
+                    title={
+                        !isAuthenticated
+                            ? "Đăng nhập để yêu thích"
+                            : liked
+                                ? "Bỏ yêu thích"
+                                : "Yêu thích"
+                    }
+                    className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-md transition hover:bg-white cursor-pointer disabled:cursor-not-allowed"
                 >
 
                     <Heart
                         size={20}
-                        className="text-gray-700"
+                        className={
+                            !isAuthenticated
+                                ? "text-gray-400"          // chưa đăng nhập → xám
+                                : liked
+                                    ? "fill-red-500 text-red-500"   // đã thích → đỏ
+                                    : "text-gray-700"        // đã đăng nhập, chưa thích → xám đậm
+                        }
                     />
 
                 </button>

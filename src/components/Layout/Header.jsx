@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
 import SearchBox from "../Search/SearchBox";
-import {
-    Search,
-    UserCircle2,
-    Menu,
-} from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
 
 import {
     getCities,
     getDistricts
 } from "../../services/locationService";
+import LoginModal from "../Common/LoginModal";
 
 
 export default function Header({
@@ -28,6 +25,8 @@ export default function Header({
     const [cities, setCities] = useState([]);
 
     const [districts, setDistricts] = useState([]);
+    const { user, logout, isAuthenticated } = useAuth();
+    const [openLogin, setOpenLogin] = useState(false);
 
 
     // =====================================================
@@ -268,24 +267,56 @@ export default function Header({
                         LOGIN
                     ================================================= */}
 
-                    <button
+{/* User area: đăng nhập hoặc tên + đăng xuất */}
 
-                        className="flex items-center gap-2 hover:text-orange-500 transition"
-
-                    >
-
-                        <UserCircle2 size={34} />
-
-                        <span>
-                            Đăng nhập
-                        </span>
-
-                    </button>
+                    {!isAuthenticated ? (
+                        <button
+                            onClick={() => setOpenLogin(true)}
+                            className="flex items-center gap-2 hover:text-orange-500 transition"
+                        >
+                            <UserCircle2 size={34} />
+                            <span>Đăng nhập</span>
+                        </button>
+                    ) : (
+                        <div className="flex items-center gap-3">
+                            {user?.hinhanh ? (
+                                <img
+                                    src={user.hinhanh}
+                                    alt={user.hoten}
+                                    referrerPolicy="no-referrer"
+                                    className="w-9 h-9 rounded-full object-cover border border-orange-200"
+                                />
+                            ) : (
+                                <UserCircle2 size={34} className="text-orange-500" />
+                            )}
+                            <span className="font-medium text-orange-500">
+                                Xin Chào, {user?.hoten}
+                                {user?.vaitro === 1 && (
+                                    <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-orange-100 text-orange-600">
+                                        Admin
+                                    </span>
+                                )}
+                            </span>
+                            <button
+                                onClick={logout}
+                                className="flex items-center gap-1 text-sm text-gray-500 hover:text-red-500 transition border border-gray-300 rounded-full px-3 py-1 hover:border-red-500"
+                                aria-label="Đăng xuất"
+                            >
+                                <LogOut size={18} />
+                                <span>Đăng xuất</span>
+                            </button>
+                        </div>
+                    )}
 
 
                 </div>
 
             </div>
+
+            <LoginModal
+                open={openLogin}
+                onClose={() => setOpenLogin(false)}
+            />
 
         </header>
 
