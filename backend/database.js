@@ -12,4 +12,13 @@ const db = mysql.createPool({
     queueLimit: 0
 });
 
+db.getConnection()
+    .then(connection => {
+        console.log("✅ Kết nối MySQL thành công!");
+        connection.release();
+    })
+    .catch(error => {
+        console.error("❌ Kết nối MySQL thất bại:", error.message);
+    });
+
 export default db;
