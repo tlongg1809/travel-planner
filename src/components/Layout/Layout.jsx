@@ -1,30 +1,82 @@
 import { useState } from "react";
+
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 
-export default function Layout({ children }) {
-  const [collapsed, setCollapsed] = useState(false);
 
-  return (
-    <div className="flex h-screen bg-gray-100">
+export default function Layout({
 
-      <Sidebar
-        collapsed={collapsed}
-      />
+    children,
 
-      <div className="flex-1 flex flex-col overflow-hidden">
+    selectedCity,
+    setSelectedCity,
 
-        <Header
-          collapsed={collapsed}
-          setCollapsed={setCollapsed}
-        />
+    selectedDistrict,
+    setSelectedDistrict
 
-        <main className="flex-1 overflow-y-auto">
-          {children}
-        </main>
+}) {
 
-      </div>
+    const [collapsed, setCollapsed] = useState(false);
 
-    </div>
-  );
+
+    return (
+
+        <div className="flex h-screen bg-gray-100">
+
+
+            {/* =========================
+                SIDEBAR
+            ========================= */}
+
+            <Sidebar
+
+                collapsed={collapsed}
+
+            />
+
+
+            {/* =========================
+                MAIN
+            ========================= */}
+
+            <div className="flex-1 flex flex-col overflow-hidden">
+
+
+                {/* =========================
+                    HEADER
+                ========================= */}
+
+                <Header
+
+                    collapsed={collapsed}
+
+                    setCollapsed={setCollapsed}
+
+                    selectedCity={selectedCity}
+
+                    setSelectedCity={setSelectedCity}
+
+                    selectedDistrict={selectedDistrict}
+
+                    setSelectedDistrict={setSelectedDistrict}
+
+                />
+
+
+                {/* =========================
+                    CONTENT
+                ========================= */}
+
+                <main className="flex-1 overflow-y-auto">
+
+                    {children}
+
+                </main>
+
+
+            </div>
+
+        </div>
+
+    );
 }

@@ -2,7 +2,10 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
-import { getPlaces } from "./place.js";
+import {
+    getPlaces,
+    getPlaceDetail
+} from "./place.js";
 import { getCategories } from "./category.js";
 import {
     getCities,
@@ -39,21 +42,103 @@ app.get("/api/places", async (req, res) => {
 
     try {
 
-        const places = await getPlaces();
+        const {
+            tinhthanh,
+            quanhuyen,
+            danhmucid,
+            search,
+            sort
+        } = req.query;
+
+
+        console.log("REQUEST /places:", req.query);
+
+
+        const places = await getPlaces({
+
+            tinhthanh: tinhthanh || "",
+            quanhuyen: quanhuyen || "",
+            danhmucid: danhmucid || "",
+            search: search || "",
+            sort: sort || "popular"
+
+        });
+
 
         res.json(places);
 
     } catch (error) {
 
-        console.error("Lỗi lấy địa điểm:", error);
+        console.error(
+            "================================="
+        );
+
+        console.error(
+            "LỖI API /api/places:"
+        );
+
+        console.error(error);
+
+        console.error(
+            "================================="
+        );
+
 
         res.status(500).json({
-            message: "Không thể lấy danh sách địa điểm"
+
+            message:
+                "Không thể lấy danh sách địa điểm",
+
+            error:
+                error.message
+
         });
 
     }
 
 });
+
+// =====================================================
+// CHI TIẾT ĐỊA ĐIỂM
+// =====================================================
+
+app.get("/api/places/:id", async (req, res) => {
+
+    try {
+
+        const { id } = req.params;
+
+        const place =
+            await getPlaceDetail(id);
+
+
+        if (!place) {
+
+            return res.status(404).json({
+                message: "Không tìm thấy địa điểm"
+            });
+
+        }
+
+
+        res.json(place);
+
+    } catch (error) {
+
+        console.error(
+            "Lỗi lấy chi tiết địa điểm:",
+            error
+        );
+
+        res.status(500).json({
+            message:
+                "Không thể lấy chi tiết địa điểm"
+        });
+
+    }
+
+});
+
 
 /* Lấy danh sách danh mục */
 app.get("/api/categories", async (req, res) => {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import SearchBox from "../Search/SearchBox";
 import {
     Search,
     UserCircle2,
@@ -13,20 +13,26 @@ import {
 
 
 export default function Header({
+
     collapsed,
     setCollapsed,
+
+    selectedCity,
+    setSelectedCity,
+
+    selectedDistrict,
+    setSelectedDistrict
+
 }) {
 
     const [cities, setCities] = useState([]);
 
     const [districts, setDistricts] = useState([]);
 
-    const [selectedCity, setSelectedCity] = useState("");
 
-    const [selectedDistrict, setSelectedDistrict] = useState("");
-
-
-    /* Lấy tỉnh/thành */
+    // =====================================================
+    // 1. LẤY DANH SÁCH TỈNH / THÀNH PHỐ
+    // =====================================================
 
     useEffect(() => {
 
@@ -36,10 +42,21 @@ export default function Header({
 
                 const res = await getCities();
 
-                setCities(res.data);
+                const cityList = res.data || [];
 
-                if (res.data.length > 0) {
-                    setSelectedCity(res.data[0].tinhthanh);
+                setCities(cityList);
+
+
+                // Chọn tỉnh đầu tiên khi vừa vào trang
+                if (
+                    cityList.length > 0 &&
+                    !selectedCity
+                ) {
+
+                    setSelectedCity(
+                        cityList[0].tinhthanh
+                    );
+
                 }
 
             } catch (error) {
@@ -53,18 +70,23 @@ export default function Header({
 
         };
 
+
         loadCities();
 
     }, []);
 
 
-    /* Khi chọn tỉnh → lấy quận/huyện */
+    // =====================================================
+    // 2. KHI ĐỔI TỈNH → LẤY LẠI QUẬN/HUYỆN
+    // =====================================================
 
     useEffect(() => {
 
         if (!selectedCity) {
 
             setDistricts([]);
+
+            setSelectedDistrict("");
 
             return;
 
@@ -79,8 +101,12 @@ export default function Header({
                     selectedCity
                 );
 
-                setDistricts(res.data);
+                setDistricts(
+                    res.data || []
+                );
 
+
+                // Đổi tỉnh → reset huyện
                 setSelectedDistrict("");
 
             } catch (error) {
@@ -92,14 +118,21 @@ export default function Header({
 
                 setDistricts([]);
 
+                setSelectedDistrict("");
+
             }
 
         };
+
 
         loadDistricts();
 
     }, [selectedCity]);
 
+
+    // =====================================================
+    // 3. GIAO DIỆN
+    // =====================================================
 
     return (
 
@@ -108,62 +141,74 @@ export default function Header({
             <div className="h-full flex items-center justify-between px-8">
 
 
-                {/* Left */}
+                {/* =================================================
+                    LEFT
+                ================================================= */}
 
                 <div className="flex items-center gap-6">
 
+
+                    {/* Menu */}
+
                     <button
+
                         onClick={() =>
                             setCollapsed(!collapsed)
                         }
+
                         className="hover:bg-gray-100 rounded-lg p-2 transition"
+
                     >
+
                         <Menu size={24} />
+
                     </button>
 
 
-                    {/* Search */}
-
-                    <div className="flex items-center w-[450px] bg-gray-100 rounded-full px-4 py-2">
-
-                        <Search
-                            size={18}
-                            className="text-gray-500"
-                        />
-
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm địa điểm..."
-                            className="flex-1 ml-3 bg-transparent outline-none"
-                        />
-
-                    </div>
+                    <SearchBox />
 
                 </div>
 
 
-                {/* Right */}
+                {/* =================================================
+                    RIGHT
+                ================================================= */}
 
                 <div className="flex items-center gap-4">
 
 
-                    {/* Tỉnh / Thành phố */}
+                    {/* =================================================
+                        TỈNH / THÀNH PHỐ
+                    ================================================= */}
 
                     <select
+
                         value={selectedCity}
-                        onChange={(e) =>
-                            setSelectedCity(e.target.value)
-                        }
+
+                        onChange={(e) => {
+
+                            setSelectedCity(
+                                e.target.value
+                            );
+
+                        }}
+
                         className="border rounded-full px-4 py-2"
+
                     >
 
                         {cities.map((city) => (
 
                             <option
+
                                 key={city.tinhthanh}
+
                                 value={city.tinhthanh}
+
                             >
+
                                 {city.tinhthanh}
+
                             </option>
 
                         ))}
@@ -171,29 +216,47 @@ export default function Header({
                     </select>
 
 
-                    {/* Quận / Huyện */}
+                    {/* =================================================
+                        QUẬN / HUYỆN
+                    ================================================= */}
 
                     <select
+
                         value={selectedDistrict}
-                        onChange={(e) =>
+
+                        onChange={(e) => {
+
                             setSelectedDistrict(
                                 e.target.value
-                            )
-                        }
-                        className="border rounded-full px-4 py-2"
+                            );
+
+                        }}
+
+                        disabled={!selectedCity}
+
+                        className="border rounded-full px-4 py-2 disabled:bg-gray-100 disabled:text-gray-400"
+
                     >
 
                         <option value="">
+
                             Tất cả quận/huyện
+
                         </option>
+
 
                         {districts.map((district) => (
 
                             <option
+
                                 key={district.quanhuyen}
+
                                 value={district.quanhuyen}
+
                             >
+
                                 {district.quanhuyen}
+
                             </option>
 
                         ))}
@@ -201,9 +264,15 @@ export default function Header({
                     </select>
 
 
-                    {/* Login */}
+                    {/* =================================================
+                        LOGIN
+                    ================================================= */}
 
-                    <button className="flex items-center gap-2 hover:text-orange-500 transition">
+                    <button
+
+                        className="flex items-center gap-2 hover:text-orange-500 transition"
+
+                    >
 
                         <UserCircle2 size={34} />
 
@@ -213,10 +282,12 @@ export default function Header({
 
                     </button>
 
+
                 </div>
 
             </div>
 
         </header>
+
     );
 }
