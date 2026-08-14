@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import SearchBox from "../Search/SearchBox";
 import { useAuth } from "../../contexts/AuthContext";
-
+import { UserCircle2, Menu, LogOut } from "lucide-react";
 import {
     getCities,
     getDistricts

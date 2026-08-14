@@ -3,48 +3,71 @@ import { useState } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 
-
 export default function Layout({
-
     children,
 
-    selectedCity,
-    setSelectedCity,
+    selectedCity: externalSelectedCity,
+    setSelectedCity: externalSetSelectedCity,
 
-    selectedDistrict,
-    setSelectedDistrict
-
+    selectedDistrict: externalSelectedDistrict,
+    setSelectedDistrict: externalSetSelectedDistrict
 }) {
 
-    const [collapsed, setCollapsed] = useState(false);
+    // ==========================================
+    // STATE MẶC ĐỊNH CHO CÁC TRANG KHÔNG TRUYỀN
+    // ==========================================
+
+    const [internalSelectedCity, setInternalSelectedCity] =
+        useState("");
+
+    const [internalSelectedDistrict, setInternalSelectedDistrict] =
+        useState("");
+
+    const [collapsed, setCollapsed] =
+        useState(false);
+
+
+    // ==========================================
+    // DÙNG STATE TỪ TRANG CHA NẾU CÓ
+    // KHÔNG CÓ THÌ DÙNG STATE CỦA LAYOUT
+    // ==========================================
+
+    const selectedCity =
+        externalSelectedCity !== undefined
+            ? externalSelectedCity
+            : internalSelectedCity;
+
+    const setSelectedCity =
+        externalSetSelectedCity ||
+        setInternalSelectedCity;
+
+
+    const selectedDistrict =
+        externalSelectedDistrict !== undefined
+            ? externalSelectedDistrict
+            : internalSelectedDistrict;
+
+    const setSelectedDistrict =
+        externalSetSelectedDistrict ||
+        setInternalSelectedDistrict;
 
 
     return (
 
         <div className="flex h-screen bg-gray-100">
 
-
-            {/* =========================
-                SIDEBAR
-            ========================= */}
+            {/* SIDEBAR */}
 
             <Sidebar
-
                 collapsed={collapsed}
-
             />
 
 
-            {/* =========================
-                MAIN
-            ========================= */}
+            {/* MAIN */}
 
             <div className="flex-1 flex flex-col overflow-hidden">
 
-
-                {/* =========================
-                    HEADER
-                ========================= */}
+                {/* HEADER */}
 
                 <Header
 
@@ -63,16 +86,13 @@ export default function Layout({
                 />
 
 
-                {/* =========================
-                    CONTENT
-                ========================= */}
+                {/* CONTENT */}
 
                 <main className="flex-1 overflow-y-auto">
 
                     {children}
 
                 </main>
-
 
             </div>
 

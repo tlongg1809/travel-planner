@@ -17,10 +17,70 @@ import {
 
 import Layout from "../../components/Layout/Layout";
 
+import PlaceGrid from "../../components/Home/PlaceGrid";
+import { useAuth } from "../../contexts/AuthContext";
+
+import {
+    getMyFavoriteIds
+} from "../../services/favoriteService";
+import LoginModal from "../../components/Common/LoginModal";
 
 export default function Explore() {
 
 
+    const { user, isAuthenticated } = useAuth();
+    const [favoriteIds, setFavoriteIds] =
+    useState([]);
+    const [openLogin, setOpenLogin] = useState(false);
+    // ==========================================
+// LẤY DANH SÁCH ID ĐỊA ĐIỂM ĐÃ YÊU THÍCH
+// ==========================================
+
+useEffect(() => {
+    if (!isAuthenticated || !user?.id) {
+        setFavoriteIds([]);
+        return;
+    }
+
+    getMyFavoriteIds(user.id)
+        .then((res) => {
+            setFavoriteIds(res.data?.ids || []);
+        })
+        .catch((error) => {
+            console.error(
+                "Lỗi lấy danh sách yêu thích:",
+                error
+            );
+            setFavoriteIds([]);
+        });
+}, [isAuthenticated, user]);
+
+
+// ==========================================
+// ĐỒNG BỘ KHI BẤM TIM
+// ==========================================
+
+const handleFavoriteChange = (placeId, isFav) => {
+    setFavoriteIds((prev) => {
+        if (isFav) {
+            if (
+                prev.some(
+                    (id) =>
+                        String(id) === String(placeId)
+                )
+            ) {
+                return prev;
+            }
+
+            return [...prev, placeId];
+        }
+
+        return prev.filter(
+            (id) =>
+                String(id) !== String(placeId)
+        );
+    });
+};
     // ==========================================
     // DATA
     // ==========================================
@@ -695,25 +755,39 @@ export default function Explore() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
                         {places.map(
-                            (place) => (
+    (place) => (
 
-                                <PlaceCard
+        <PlaceCard
+    key={place.id}
+    place={place}
 
-                                    key={place.id}
+    isFavorite={favoriteIds.some(
+        (id) =>
+            String(id) ===
+            String(place.id)
+    )}
 
-                                    place={place}
+    onFavoriteChange={
+        handleFavoriteChange
+    }
 
-                                />
+    onRequireLogin={() =>
+        setOpenLogin(true)
+    }
+/>
 
-                            )
-                        )}
-
+    )
+)}
                     </div>
 
                 )}
 
             </div>
 
+<LoginModal
+    open={openLogin}
+    onClose={() => setOpenLogin(false)}
+/>
         </Layout>
 
     );
