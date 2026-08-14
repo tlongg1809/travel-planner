@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-
+import LoginModal from "../Common/LoginModal";
 import {
     Search,
     UserCircle2,
     Menu,
+    LogOut,
 } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
 
 import {
     getCities,
@@ -17,6 +19,8 @@ export default function Header({
     setCollapsed,
 }) {
 
+    const { user, logout, isAuthenticated } = useAuth();
+
     const [cities, setCities] = useState([]);
 
     const [districts, setDistricts] = useState([]);
@@ -24,6 +28,8 @@ export default function Header({
     const [selectedCity, setSelectedCity] = useState("");
 
     const [selectedDistrict, setSelectedDistrict] = useState("");
+
+    const [openLogin, setOpenLogin] = useState(false);
 
 
     /* Lấy tỉnh/thành */
@@ -154,7 +160,7 @@ export default function Header({
                         onChange={(e) =>
                             setSelectedCity(e.target.value)
                         }
-                        className="border rounded-full px-4 py-2"
+                        className="border border-gray-300 rounded-full px-4 py-2 hover:border-orange-500 transition cursor-pointer"
                     >
 
                         {cities.map((city) => (
@@ -180,7 +186,7 @@ export default function Header({
                                 e.target.value
                             )
                         }
-                        className="border rounded-full px-4 py-2"
+                        className="border border-gray-300 rounded-full px-4 py-2 hover:border-orange-500 transition cursor-pointer"
                     >
 
                         <option value="">
@@ -201,21 +207,46 @@ export default function Header({
                     </select>
 
 
-                    {/* Login */}
+                    {/* User area: đăng nhập hoặc tên + đăng xuất */}
 
-                    <button className="flex items-center gap-2 hover:text-orange-500 transition">
-
-                        <UserCircle2 size={34} />
-
-                        <span>
-                            Đăng nhập
-                        </span>
-
-                    </button>
+                    {!isAuthenticated ? (
+                        <button
+                            onClick={() => setOpenLogin(true)}
+                            className="flex items-center gap-2 hover:text-orange-500 transition"
+                        >
+                            <UserCircle2 size={34} />
+                            <span>Đăng nhập</span>
+                        </button>
+                    ) : (
+                        <div className="flex items-center gap-3">
+                            <UserCircle2 size={34} className="text-orange-500" />
+                            <span className="font-medium text-orange-500">
+                                Xin Chào, {user?.hoten}
+                                {user?.vaitro === 1 && (
+                                    <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-orange-100 text-orange-600">
+                                        Admin
+                                    </span>
+                                )}
+                            </span>
+                            <button
+                                onClick={logout}
+                                className="flex items-center gap-1 text-sm text-gray-500 hover:text-red-500 transition border border-gray-300 rounded-full px-3 py-1 hover:border-red-500"
+                                aria-label="Đăng xuất"
+                            >
+                                <LogOut size={18} />
+                                <span>Đăng xuất</span>
+                            </button>
+                        </div>
+                    )}
 
                 </div>
 
             </div>
+
+            <LoginModal
+                open={openLogin}
+                onClose={() => setOpenLogin(false)}
+            />
 
         </header>
     );

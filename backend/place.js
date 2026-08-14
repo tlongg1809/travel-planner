@@ -11,7 +11,6 @@ export async function getPlaces() {
             dd.tinhthanh,
             dd.giadukien,
             dd.trangthai,
-            dd.google_place_id,
             dd.latitude,
             dd.longitude,
             dd.thoigianhoatdong,

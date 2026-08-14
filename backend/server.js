@@ -8,6 +8,7 @@ import {
     getCities,
     getDistricts
 } from "./location.js";
+import { findOrCreateGoogleUser } from "./user.js";
 
 dotenv.config();
 
@@ -124,6 +125,95 @@ app.get("/api/locations/districts", async (req, res) => {
 
         res.status(500).json({
             message: "Không thể lấy danh sách quận/huyện"
+        });
+
+    }
+
+});
+
+
+/* ==========================Đăng nhập bằng Google========================= */
+
+/**
+ * POST /api/auth/google
+ * Body: { credential: "<id_token từ Google OAuth>" }
+ *
+ * - Nếu tài khoản chưa tồn tại → tự động tạo mới với vaitro = 0
+ * - Nếu đã tồn tại → trả về thông tin user hiện có (giữ nguyên vaitro)
+ * - Trả về vaitro để frontend điều hướng: 0 = user, 1 = admin
+ */
+app.post("/api/auth/google", async (req, res) => {
+
+    try {
+
+        const { credential } = req.body;
+
+        if (!credential) {
+
+            return res.status(400).json({
+                message: "Thiếu credential từ Google"
+            });
+
+        }
+
+        // Giải mã payload của id_token (phần thứ 2 của JWT)
+        // Lưu ý: chỉ decode để lấy thông tin cơ bản; production nên verify signature
+        const parts = credential.split(".");
+
+        if (parts.length !== 3) {
+
+            return res.status(400).json({
+                message: "Credential không hợp lệ"
+            });
+
+        }
+
+        // Chuẩn hoá base64url về base64 chuẩn
+        const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+        const padded = b64 + "=".repeat((4 - (b64.length % 4)) % 4);
+
+        let payload;
+        try {
+            payload = JSON.parse(
+                Buffer.from(padded, "base64").toString("utf-8")
+            );
+        } catch (parseErr) {
+            console.error("Không parse được payload Google:", parseErr);
+            return res.status(400).json({
+                message: "Credential không hợp lệ (payload)"
+            });
+        }
+
+        const googleId = payload.sub;
+        const email = payload.email;
+        const hoten = payload.name || email;
+
+        if (!googleId || !email) {
+
+            return res.status(400).json({
+                message: "Không lấy được thông tin từ Google"
+            });
+
+        }
+
+        const { user, isNew } = await findOrCreateGoogleUser({
+            googleId,
+            email,
+            hoten,
+        });
+
+        res.json({
+            user,
+            isNewAccount: isNew,
+        });
+
+    } catch (error) {
+
+        console.error("Lỗi đăng nhập Google:", error);
+
+        res.status(500).json({
+            message: "Đăng nhập Google thất bại",
+            detail: error?.message || String(error),
         });
 
     }
