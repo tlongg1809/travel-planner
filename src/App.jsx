@@ -11,6 +11,8 @@ import QuanLyDiaDiem, {
   LocationFormPage,
   LocationDetailPage,
 } from "./pages/Admin/QuanLyDiaDiem";
+import PlaceDetail from "./pages/User/PlaceDetail";
+import Favorites from "./pages/User/Favorites";
 
 function App() {
   return (
@@ -40,6 +42,9 @@ function App() {
               element={<LocationFormPage mode="edit" />}
             />
           </Route>
+          <Route path="/places/:id" element={<PlaceDetail />} />
+          <Route path="/favorites" element={<Favorites />} />
+
         </Routes>
       </main>
     </div>
