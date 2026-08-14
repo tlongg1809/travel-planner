@@ -9,6 +9,12 @@ import {
     getDistricts
 } from "./location.js";
 import { findOrCreateGoogleUser } from "./user.js";
+import {
+    getFavoritesByUser,
+    toggleFavorite,
+    getFavoritePlaceIds,
+    getFavoritesByUserWithDetails,
+} from "./favorite.js";
 
 dotenv.config();
 
@@ -187,6 +193,7 @@ app.post("/api/auth/google", async (req, res) => {
         const googleId = payload.sub;
         const email = payload.email;
         const hoten = payload.name || email;
+        const hinhanh = payload.picture || null;
 
         if (!googleId || !email) {
 
@@ -200,6 +207,7 @@ app.post("/api/auth/google", async (req, res) => {
             googleId,
             email,
             hoten,
+            hinhanh,
         });
 
         res.json({
@@ -214,6 +222,138 @@ app.post("/api/auth/google", async (req, res) => {
         res.status(500).json({
             message: "Đăng nhập Google thất bại",
             detail: error?.message || String(error),
+        });
+
+    }
+
+});
+
+
+/* ==========================Yêu thích========================= */
+
+/**
+ * GET /api/favorites?userId=...
+ * Trả về danh sách địa điểm user đó đã yêu thích
+ */
+app.get("/api/favorites", async (req, res) => {
+
+    try {
+
+        const { userId } = req.query;
+
+        if (!userId) {
+            return res.status(400).json({
+                message: "Thiếu userId"
+            });
+        }
+
+        const data = await getFavoritesByUser(userId);
+        res.json(data);
+
+    } catch (error) {
+
+        console.error("Lỗi lấy danh sách yêu thích:", error);
+
+        res.status(500).json({
+            message: "Không thể lấy danh sách yêu thích"
+        });
+
+    }
+
+});
+
+
+/**
+ * GET /api/favorites/details?userId=...
+ * Trả về danh sách địa điểm yêu thích kèm đầy đủ thông tin (rating, categories, image...)
+ * để hiển thị PlaceCard giống trang Explore
+ */
+app.get("/api/favorites/details", async (req, res) => {
+
+    try {
+
+        const { userId } = req.query;
+
+        if (!userId) {
+            return res.status(400).json({
+                message: "Thiếu userId"
+            });
+        }
+
+        const data = await getFavoritesByUserWithDetails(userId);
+        res.json(data);
+
+    } catch (error) {
+
+        console.error("Lỗi lấy danh sách yêu thích (chi tiết):", error);
+
+        res.status(500).json({
+            message: "Không thể lấy danh sách yêu thích"
+        });
+
+    }
+
+});
+
+
+/**
+ * GET /api/favorites/ids?userId=...
+ * Trả về mảng id địa điểm yêu thích của user (để check nhanh trên card)
+ */
+app.get("/api/favorites/ids", async (req, res) => {
+
+    try {
+
+        const { userId } = req.query;
+
+        if (!userId) {
+            return res.status(400).json({
+                message: "Thiếu userId"
+            });
+        }
+
+        const ids = await getFavoritePlaceIds(userId);
+        res.json({ ids });
+
+    } catch (error) {
+
+        console.error("Lỗi lấy id yêu thích:", error);
+
+        res.status(500).json({
+            message: "Không thể lấy id yêu thích"
+        });
+
+    }
+
+});
+
+
+/**
+ * POST /api/favorites/toggle
+ * Body: { userId, placeId }
+ * Nếu đã thích → xóa, chưa thích → thêm. Trả về { favorite: boolean }.
+ */
+app.post("/api/favorites/toggle", async (req, res) => {
+
+    try {
+
+        const { userId, placeId } = req.body;
+
+        if (!userId || !placeId) {
+            return res.status(400).json({
+                message: "Thiếu userId hoặc placeId"
+            });
+        }
+
+        const result = await toggleFavorite(userId, placeId);
+        res.json(result);
+
+    } catch (error) {
+
+        console.error("Lỗi toggle yêu thích:", error);
+
+        res.status(500).json({
+            message: "Không thể thay đổi trạng thái yêu thích"
         });
 
     }

@@ -219,7 +219,16 @@ export default function Header({
                         </button>
                     ) : (
                         <div className="flex items-center gap-3">
-                            <UserCircle2 size={34} className="text-orange-500" />
+                            {user?.hinhanh ? (
+                                <img
+                                    src={user.hinhanh}
+                                    alt={user.hoten}
+                                    referrerPolicy="no-referrer"
+                                    className="w-9 h-9 rounded-full object-cover border border-orange-200"
+                                />
+                            ) : (
+                                <UserCircle2 size={34} className="text-orange-500" />
+                            )}
                             <span className="font-medium text-orange-500">
                                 Xin Chào, {user?.hoten}
                                 {user?.vaitro === 1 && (

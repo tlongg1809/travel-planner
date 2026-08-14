@@ -10,6 +10,7 @@ export async function findUserByGoogleId(googleId) {
             id,
             google_id,
             hoten,
+            hinhanh,
             email,
             vaitro,
             trangthai
@@ -31,14 +32,15 @@ export async function createUser({
     googleId,
     email,
     hoten,
+    hinhanh = null,
     vaitro = 0,
     trangthai = 1,
 }) {
     const [result] = await db.execute(
         `INSERT INTO nguoidung
-            (google_id, hoten, email, vaitro, trangthai)
-        VALUES (?, ?, ?, ?, ?)`,
-        [googleId, hoten, email, vaitro, trangthai]
+            (google_id, hoten, hinhanh, email, vaitro, trangthai)
+        VALUES (?, ?, ?, ?, ?, ?)`,
+        [googleId, hoten, hinhanh, email, vaitro, trangthai]
     );
 
     return getUserById(result.insertId);
@@ -54,6 +56,7 @@ export async function getUserById(id) {
             id,
             google_id,
             hoten,
+            hinhanh,
             email,
             vaitro,
             trangthai
@@ -68,25 +71,53 @@ export async function getUserById(id) {
 
 
 /**
+ * Cập nhật lại hoten + hinhanh theo thông tin Google
+ * Dùng khi user đã tồn tại nhưng đổi tên / đổi ảnh trên Google
+ */
+export async function updateUserGoogleInfo({
+    id,
+    hoten,
+    hinhanh = null,
+}) {
+    await db.execute(
+        `UPDATE nguoidung
+         SET hoten = ?, hinhanh = ?
+         WHERE id = ?`,
+        [hoten, hinhanh, id]
+    );
+
+    return getUserById(id);
+}
+
+
+/**
  * Tìm hoặc tạo người dùng từ thông tin Google
- * - Nếu đã tồn tại theo google_id → trả về user
+ * - Nếu đã tồn tại theo google_id → đồng bộ lại hoten + hinhanh từ Google rồi trả về
  * - Nếu chưa tồn tại → tạo mới với vaitro = 0
  */
 export async function findOrCreateGoogleUser({
     googleId,
     email,
     hoten,
+    hinhanh = null,
 }) {
     const existing = await findUserByGoogleId(googleId);
 
     if (existing) {
-        return { user: existing, isNew: false };
+        // Đồng bộ lại hoten + hinhanh nếu user đã đổi trên Google
+        const updated = await updateUserGoogleInfo({
+            id: existing.id,
+            hoten,
+            hinhanh,
+        });
+        return { user: updated, isNew: false };
     }
 
     const created = await createUser({
         googleId,
         email,
         hoten,
+        hinhanh,
         vaitro: 0,
         trangthai: 1,
     });
