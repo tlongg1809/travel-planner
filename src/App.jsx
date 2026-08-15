@@ -2,17 +2,16 @@ import { Routes, Route } from "react-router-dom";
 
 import Home from "./pages/User/Home";
 import Explore from "./pages/User/Explore";
-
+import PlaceDetail from "./pages/User/PlaceDetail";
+import Favorites from "./pages/User/Favorites";
 import AdminLayout from "./components/layout/AdminLayout";
 import Dashboard from "./pages/Admin/Dashboard";
 import QuanLyDanhMuc from "./pages/Admin/QuanLyDanhMuc";
-
 import QuanLyDiaDiem, {
   LocationFormPage,
   LocationDetailPage,
 } from "./pages/Admin/QuanLyDiaDiem";
-import PlaceDetail from "./pages/User/PlaceDetail";
-import Favorites from "./pages/User/Favorites";
+import QuanLyBinhLuan from "./pages/Admin/QuanLyBinhLuan";
 
 function App() {
   return (
@@ -22,7 +21,8 @@ function App() {
           {/* USER */}
           <Route path="/" element={<Home />} />
           <Route path="/explore" element={<Explore />} />
-
+          <Route path="/places/:id" element={<PlaceDetail />} />
+          <Route path="/favorites" element={<Favorites />} />
           {/* ADMIN */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
@@ -41,10 +41,8 @@ function App() {
               path="dia-diem/:id/chinh-sua"
               element={<LocationFormPage mode="edit" />}
             />
+            <Route path="/admin/binh-luan" element={<QuanLyBinhLuan />} />
           </Route>
-          <Route path="/places/:id" element={<PlaceDetail />} />
-          <Route path="/favorites" element={<Favorites />} />
-
         </Routes>
       </main>
     </div>
