@@ -33,6 +33,7 @@ import {
     saveReview
 } from "../../services/reviewService";
 
+import AddToScheduleButton from "../../components/common/AddToScheduleButton";
 
 export default function PlaceDetail() {
 
@@ -574,11 +575,10 @@ export default function PlaceDetail() {
                                         <img
                                             src={`http://localhost/travel-planner/backend/uploads/${image.url}`}
                                             alt=""
-                                            className={`h-full w-full object-cover transition ${
-                                                currentImage === index
+                                            className={`h-full w-full object-cover transition ${currentImage === index
                                                     ? "opacity-70"
                                                     : "hover:scale-105"
-                                            }`}
+                                                }`}
                                         />
 
                                     </button>
@@ -884,7 +884,7 @@ export default function PlaceDetail() {
                                     <h3 className="text-lg font-bold">
 
                                         {myReview?.rating ||
-                                        myReview?.comment
+                                            myReview?.comment
                                             ? "Đánh giá của bạn"
                                             : "Viết đánh giá"
                                         }
@@ -1035,7 +1035,7 @@ export default function PlaceDetail() {
                                                         ? "Đang lưu..."
 
                                                         : myReview?.rating ||
-                                                          myReview?.comment
+                                                            myReview?.comment
 
                                                             ? "Cập nhật đánh giá"
 
@@ -1154,21 +1154,14 @@ export default function PlaceDetail() {
                                 </p>
 
 
-                                <button
-                                    onClick={() =>
-                                        navigate(
-                                            `/create-schedule?placeId=${place.id}`
-                                        )
-                                    }
-                                    className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 font-semibold text-white transition hover:bg-orange-600"
+                                <div
+                                    className="mt-5"
+                                    onClick={(e) => e.stopPropagation()}
                                 >
-
-                                    <Plus size={20} />
-
-                                    Thêm vào lịch trình
-
-                                </button>
-
+                                    <AddToScheduleButton
+                                        place={place}
+                                    />
+                                </div>
 
                                 <div className="mt-5 border-t pt-5 text-sm text-gray-500">
 
