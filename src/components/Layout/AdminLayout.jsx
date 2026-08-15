@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 import Sidebar from "./SidebarAdmin";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
+  const { isAuthenticated, isAdmin } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  if (!isAuthenticated || !isAdmin) {
+    return <Navigate to="/" replace />;
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("token");
