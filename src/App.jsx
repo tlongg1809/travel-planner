@@ -12,6 +12,7 @@ import QuanLyDiaDiem, {
   LocationDetailPage,
 } from "./pages/Admin/QuanLyDiaDiem";
 import QuanLyBinhLuan from "./pages/Admin/QuanLyBinhLuan";
+import QuanLyNguoiDung from "./pages/Admin/QuanLyNguoiDung";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
               element={<LocationFormPage mode="edit" />}
             />
             <Route path="/admin/binh-luan" element={<QuanLyBinhLuan />} />
+            <Route path="/admin/nguoi-dung" element={<QuanLyNguoiDung />} />
           </Route>
         </Routes>
       </main>

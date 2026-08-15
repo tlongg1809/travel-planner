@@ -42,6 +42,9 @@ import {
   reviewRoutes,
 } from "./review.js";
 import commentRoutes from "./comment.js";
+import adminUserRouter from "./adminUserRoute.js";
+import dashboardRoute from "./dashboardRoute.js";
+
 dotenv.config();
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -54,6 +57,11 @@ app.use(express.json());
 
 app.use("/api/comments", commentRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/admin/users", adminUserRouter);
+app.use(
+    "/api/admin/dashboard",
+    dashboardRoute
+);
 
 /* Test Server */
 app.get("/api/test", (req, res) => {
