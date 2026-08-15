@@ -14,6 +14,11 @@ import QuanLyDiaDiem, {
 import QuanLyBinhLuan from "./pages/Admin/QuanLyBinhLuan";
 import QuanLyNguoiDung from "./pages/Admin/QuanLyNguoiDung";
 
+import CreateSchedule from "./pages/User/CreateSchedule";
+import ScheduleDetail from "./pages/User/ScheduleDetail";
+import GroupSchedules from "./pages/User/GroupSchedules";
+import GroupDetail from "./pages/User/GroupDetail";
+
 function App() {
   return (
     <div className="flex h-screen w-full">
@@ -24,6 +29,13 @@ function App() {
           <Route path="/explore" element={<Explore />} />
           <Route path="/places/:id" element={<PlaceDetail />} />
           <Route path="/favorites" element={<Favorites />} />
+            <Route path="/create-schedule" element={<CreateSchedule />} />
+            <Route path="/create-schedule/:id" element={<ScheduleDetail />} />
+
+            <Route path="/group-schedule" element={<GroupSchedules />} />
+            <Route path="/group-schedules/:id" element={<GroupDetail />} />
+
+            
           {/* ADMIN */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
@@ -44,6 +56,7 @@ function App() {
             />
             <Route path="/admin/binh-luan" element={<QuanLyBinhLuan />} />
             <Route path="/admin/nguoi-dung" element={<QuanLyNguoiDung />} />
+
           </Route>
         </Routes>
       </main>
