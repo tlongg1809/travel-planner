@@ -752,33 +752,12 @@ const handleFavoriteChange = (placeId, isFav) => {
 
                 ) : (
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-
-                        {places.map(
-    (place) => (
-
-        <PlaceCard
-    key={place.id}
-    place={place}
-
-    isFavorite={favoriteIds.some(
-        (id) =>
-            String(id) ===
-            String(place.id)
-    )}
-
-    onFavoriteChange={
-        handleFavoriteChange
-    }
-
-    onRequireLogin={() =>
-        setOpenLogin(true)
-    }
+                    <PlaceGrid
+  places={places}
+  favoriteIds={favoriteIds}
+  onFavoriteChange={handleFavoriteChange}
+  onRequireLogin={() => setOpenLogin(true)}
 />
-
-    )
-)}
-                    </div>
 
                 )}
 
