@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { Search, MapPin } from "lucide-react";
 import { getPlaces } from "../../services/placeService";
-
+import { useNavigate } from "react-router-dom";
 export default function SearchBox() {
 
     const [keyword, setKeyword] = useState("");
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showResults, setShowResults] = useState(false);
+    const navigate = useNavigate();
 
 
     // ==========================================
@@ -78,20 +79,13 @@ export default function SearchBox() {
 
     const handleSelectPlace = (place) => {
 
-        console.log(
-            "Đã chọn địa điểm:",
-            place
-        );
+    setShowResults(false);
 
-        // Tạm thời
-        // Sau này sẽ:
-        // navigate(`/places/${place.id}`);
+    setKeyword("");
 
-        setKeyword(place.tendiadiem);
+    navigate(`/places/${place.id}`);
 
-        setShowResults(false);
-
-    };
+};
 
 
     return (

@@ -36,6 +36,10 @@ import {
   getFavoritePlaceIds,
   getFavoritesByUserWithDetails,
 } from "./favorite.js";
+import {
+  getMyReview,
+  saveReview,
+} from "./review.js";
 
 dotenv.config();
 const app = express();
@@ -67,6 +71,78 @@ app.get("/api/test-db", async (req, res) => {
       success: false,
       message: "Kết nối CSDL thất bại!",
       error: error.message,
+    });
+  }
+});
+
+/* ========================== ĐÁNH GIÁ & BÌNH LUẬN ========================= */
+
+// Lấy đánh giá/bình luận của user hiện tại cho địa điểm
+app.get("/api/reviews/my", async (req, res) => {
+  try {
+    const { userId, placeId } = req.query;
+    if (!userId || !placeId) {
+      return res.status(400).json({
+        message: "Thiếu userId hoặc placeId",
+      });
+    }
+    const review = await getMyReview(
+      userId,
+      placeId
+    );
+    res.json(review);
+  } catch (error) {
+    console.error(
+      "Lỗi lấy đánh giá của user:",
+      error
+    );
+    res.status(500).json({
+      message:
+        "Không thể lấy đánh giá của người dùng",
+    });
+  }
+});
+
+// Thêm / cập nhật đánh giá + bình luận
+app.post("/api/reviews", async (req, res) => {
+  try {
+    const {
+      userId,
+      placeId,
+      rating,
+      comment,
+    } = req.body;
+    if (!userId || !placeId) {
+      return res.status(400).json({
+        message:
+          "Thiếu userId hoặc placeId",
+      });
+    }
+    if (
+      rating === null ||
+      rating === undefined
+    ) {
+      return res.status(400).json({
+        message:
+          "Vui lòng chọn số sao đánh giá",
+      });
+    }
+    const result = await saveReview({
+      userId,
+      placeId,
+      rating,
+      comment,
+    });
+    res.json(result);
+  } catch (error) {
+    console.error(
+      "Lỗi API đánh giá:",
+      error
+    );
+    res.status(500).json({
+      message:
+        error.message ||
+        "Không thể lưu đánh giá",
     });
   }
 });
