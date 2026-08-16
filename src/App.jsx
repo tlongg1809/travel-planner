@@ -14,6 +14,8 @@ import GroupSchedules from "./pages/User/GroupSchedules";
 import ScheduleDetail from "./pages/User/ScheduleDetail";
 import GroupDetail from "./pages/User/GroupDetail";
 // ADMIN
+import QuanLyNguoiDung from "./pages/Admin/QuanLyNguoiDung";
+import QuanLyBinhLuan from "./pages/Admin/QuanLyBinhLuan";
 import AdminLayout from "./components/Layout/AdminLayout";
 import Dashboard from "./pages/Admin/Dashboard";
 import QuanLyDanhMuc from "./pages/Admin/QuanLyDanhMuc";
@@ -44,11 +46,6 @@ function ProtectedAdminRoute() {
 // ===============================
 // APP
 // ===============================
-
-import PlaceDetail from "./pages/User/PlaceDetail";
-import Favorites from "./pages/User/Favorites";
-import MapPage from "./pages/User/MapPage";
-
 function App() {
   return (
     <div className="flex h-screen w-full">
@@ -61,9 +58,6 @@ function App() {
 
           {/* Khám phá */}
           <Route path="/explore" element={<Explore />} />
-
-          {/* Chi tiết địa điểm */}
-          <Route path="/places/:id" element={<PlaceDetail />} />
           <Route path="/map" element={<MapPage />} />
           {/* Chi tiết địa điểm */}
           <Route
@@ -77,8 +71,8 @@ function App() {
           />
 
           {/* Địa điểm yêu thích */}
-          <Route path="/favorites" element={<Favorites />} />
-          <Route path="/map" element={<MapPage />} />
+          
+          
           <Route path="/create-schedule" element={<CreateSchedule />} />
           <Route path="/map-explore" element={<MapExplore />} />
           <Route path="/group-schedule" element={<GroupSchedules />} />
