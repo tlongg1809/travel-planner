@@ -113,7 +113,7 @@ export default function AddToScheduleButton({ place }) {
 
             {openSchedule && (
                 <div
-                    className="fixed inset-0 z-[60] flex items-center justify-center"
+                    className="fixed inset-0 z-[9999] flex items-center justify-center"
                     onClick={(e) => e.stopPropagation()}
                 >
                     {/* Overlay */}
@@ -125,7 +125,7 @@ export default function AddToScheduleButton({ place }) {
                     />
 
                     {/* Modal */}
-                    <div className="relative z-10 mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+                    <div className="relative z-10000 mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
 
                         <div className="mb-5 flex items-center justify-between">
                             <div>

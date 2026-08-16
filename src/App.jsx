@@ -13,6 +13,7 @@ import MapExplore from "./pages/User/MapExplore";
 import GroupSchedules from "./pages/User/GroupSchedules";
 import ScheduleDetail from "./pages/User/ScheduleDetail";
 import GroupDetail from "./pages/User/GroupDetail";
+import About from "./pages/User/About";
 // ADMIN
 import QuanLyNguoiDung from "./pages/Admin/QuanLyNguoiDung";
 import QuanLyBinhLuan from "./pages/Admin/QuanLyBinhLuan";
@@ -78,6 +79,7 @@ function App() {
           <Route path="/group-schedule" element={<GroupSchedules />} />
           <Route path="/create-schedule/:id" element={<ScheduleDetail />} />
           <Route path="/group-schedules/:id" element={<GroupDetail />} />
+          <Route path="/about" element={<About />} />
 
 
           {/* ================= ADMIN ================= */}

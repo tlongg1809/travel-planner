@@ -8,7 +8,7 @@ import Hero from "../../components/Home/Hero";
 import LoginModal from "../../components/Common/LoginModal";
 import { getMyFavoriteIds } from "../../services/favoriteService";
 import { useAuth } from "../../contexts/AuthContext";
-
+import PlaceGrid from "../../components/Home/PlaceGrid";
 export default function Home() {
 
     const [openLogin, setOpenLogin] = useState(false);
@@ -143,27 +143,18 @@ setPlaces(res.data);
 
                     </div>
 
-                ) : (
-
-                    <div className="grid grid-cols-4 gap-8">
-
-                        {places.map((place) => (
-
-                            <PlaceCard
-                                key={place.id}
-                                place={place}
-                                isFavorite={favoriteIds.some(
-    (id) => String(id) === String(place.id)
-)}
-                                onFavoriteChange={handleFavoriteChange}
-                                onRequireLogin={() => setOpenLogin(true)}
-                            />
-
-                        ))}
-
-                    </div>
+                ) : (         
+                    <PlaceGrid
+                  places={places}
+                  favoriteIds={favoriteIds}
+                  onFavoriteChange={handleFavoriteChange}
+                  onRequireLogin={() => setOpenLogin(true)}
+                />       
+                    
 
                 )}
+                
+                
 
             </div>
             <LoginModal

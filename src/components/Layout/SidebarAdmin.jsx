@@ -75,7 +75,7 @@ export default function Sidebar({
             </div>
             <div className="min-w-0">
               <h2 className="font-bold text-slate-800 text-sm leading-tight truncate">
-                TRAVEL PLANNER
+                TRAVEL DUCK
               </h2>
               <span className="font-medium text-slate-400 text-xs truncate block">
                 Trang Quản Trị Viên

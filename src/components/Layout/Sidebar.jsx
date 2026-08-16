@@ -8,7 +8,8 @@ import {
   Users,
   Info,
 } from "lucide-react";
-
+const logoUrl = "http://localhost:5000/uploads/logo.png";
+const fallbackLogoUrl = "http://localhost:5000/uploads/logo.jpg";
 const menuItems = [
   {
     icon: House,
@@ -65,19 +66,29 @@ export default function Sidebar({ collapsed }) {
       <div className="h-20 flex items-center justify-center border-b">
         {collapsed ? (
           <img
-            src="/logo.png"
+            src={logoUrl}
             alt="logo"
-            className="w-10 h-10"
+            className="w-24 h-24 object-contain"
+            onError={(e) => {
+              if (e.currentTarget.src !== fallbackLogoUrl) {
+                e.currentTarget.src = fallbackLogoUrl;
+              }
+            }}
           />
         ) : (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-0">
             <img
-              src="/logo.png"
+              src={logoUrl}
               alt="logo"
-              className="w-10 h-10"
+              className="w-18 h-18 object-contain"
+              onError={(e) => {
+                if (e.currentTarget.src !== fallbackLogoUrl) {
+                  e.currentTarget.src = fallbackLogoUrl;
+                }
+              }}
             />
             <h1 className="text-2xl font-bold text-orange-500">
-              Travel Planner
+              Travel Duck
             </h1>
           </div>
         )}

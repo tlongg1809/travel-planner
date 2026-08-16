@@ -60,7 +60,7 @@ export default function AdminLayout() {
             </div>
             <div className="min-w-0">
               <h1 className="font-bold text-slate-800 text-sm leading-tight truncate">
-                TRAVEL PLANNER
+                TRAVEL DUCK
               </h1>
               <span className="text-[11px] text-slate-400 truncate block">
                 Trang Quản Trị Viên
