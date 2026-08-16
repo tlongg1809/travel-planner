@@ -22,8 +22,6 @@ import QuanLyDiaDiem, {
   LocationDetailPage,
 } from "./pages/Admin/QuanLyDiaDiem";
 
-
-
 // ===============================
 // BẢO VỆ KHU VỰC ADMIN
 // ===============================
@@ -46,6 +44,11 @@ function ProtectedAdminRoute() {
 // ===============================
 // APP
 // ===============================
+
+import PlaceDetail from "./pages/User/PlaceDetail";
+import Favorites from "./pages/User/Favorites";
+import MapPage from "./pages/User/MapPage";
+
 function App() {
   return (
     <div className="flex h-screen w-full">
@@ -61,6 +64,17 @@ function App() {
 
           {/* Chi tiết địa điểm */}
           <Route path="/places/:id" element={<PlaceDetail />} />
+          <Route path="/map" element={<MapPage />} />
+          {/* Chi tiết địa điểm */}
+          <Route
+            path="/places/:id"
+            element={<PlaceDetail />}
+          />
+          {/* Yêu thích */}
+          <Route
+            path="/favorites"
+            element={<Favorites />}
+          />
 
           {/* Địa điểm yêu thích */}
           <Route path="/favorites" element={<Favorites />} />
@@ -107,6 +121,18 @@ function App() {
               path="dia-diem/:id/chinh-sua"
               element={<LocationFormPage mode="edit" />}
             />
+            {/* Quản lý bình luận */}
+            <Route
+              path="binh-luan"
+              element={<QuanLyBinhLuan />}
+            />
+
+            {/* Quản lý người dùng */}
+            <Route
+              path="nguoi-dung"
+              element={<QuanLyNguoiDung />}
+            />
+
           </Route>
         </Routes>
       </main>
