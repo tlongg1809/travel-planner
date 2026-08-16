@@ -33,7 +33,7 @@ const menuItems = [
   {
     icon: Map,
     title: "Bản đồ",
-    path: "/map",
+    path: "/map-explore",
   },
   {
     icon: Users,

@@ -299,118 +299,98 @@ export async function updatePlace(placeId, place) {
 // 7. LẤY CHI TIẾT ĐỊA ĐIỂM (KÈM GALLERY, ĐÁNH GIÁ, BÌNH LUẬN)
 // =====================================================
 export async function getPlaceDetail(id) {
-  // Thông tin địa điểm
-  const [placeRows] = await db.execute(
-    `
-        SELECT
-            dd.id,
-            dd.tendiadiem,
-            dd.mota,
-            dd.diachi,
-            dd.quanhuyen,
-            dd.tinhthanh,
-            dd.giadukien,
-            dd.trangthai,
-            dd.latitude,
-            dd.longitude,
-            dd.thoigianhoatdong,
-            COALESCE(ROUND(AVG(dg.sosao), 1), 0) AS rating,
-            COUNT(DISTINCT dg.id) AS review_count,
-            COALESCE(MIN(dm.id), NULL) AS danhmucid,
-            COALESCE(
-                GROUP_CONCAT(
-                    DISTINCT dm.tendanhmuc
-                    ORDER BY dm.id
-                    SEPARATOR ','
-                ),
-                ''
-            ) AS categories,
-            COALESCE(
-                MAX(CASE WHEN ha.IsPrimary = 1 THEN ha.Url END),
-                MIN(CASE WHEN ha.Url IS NOT NULL THEN ha.Url END),
-                ''
-            ) AS image,
-            COALESCE(
-                GROUP_CONCAT(
-                    DISTINCT ha.Url
-                    ORDER BY ha.IsPrimary DESC, ha.Id ASC
-                    SEPARATOR ','
-                ),
-                ''
-            ) AS images
-        FROM diadiem dd
-        LEFT JOIN danhgia dg ON dd.id = dg.diadiemid
-        LEFT JOIN danhmuc_diadiem dmdd ON dd.id = dmdd.diadiemid
-        LEFT JOIN danhmuc dm ON dmdd.danhmucid = dm.id
-        LEFT JOIN hinhanh_diadiem ha ON dd.id = ha.DiaDiemId
-        WHERE dd.id = ?
-        GROUP BY dd.id
-    `,
-    [id],
-  );
+  const [placeRows] = await db.execute(`
+    SELECT
+      dd.id,
+      dd.tendiadiem,
+      dd.mota,
+      dd.diachi,
+      dd.quanhuyen,
+      dd.tinhthanh,
+      dd.giadukien,
+      dd.trangthai,
+      dd.latitude,
+      dd.longitude,
+      dd.thoigianhoatdong,
+      COALESCE(ROUND(AVG(dg.sosao), 1), 0) AS rating,
+      COUNT(DISTINCT dg.id) AS review_count,
+      COALESCE(MIN(dm.id), NULL) AS danhmucid,
+      COALESCE(GROUP_CONCAT(DISTINCT dm.tendanhmuc ORDER BY dm.id SEPARATOR ','), '') AS categories,
+      COALESCE(
+        MAX(CASE WHEN ha.IsPrimary = 1 THEN ha.Url END),
+        MIN(CASE WHEN ha.Url IS NOT NULL THEN ha.Url END),
+        ''
+      ) AS image,
+      COALESCE(
+        GROUP_CONCAT(
+          DISTINCT ha.Url
+          ORDER BY ha.IsPrimary DESC, ha.Id ASC
+          SEPARATOR ','
+        ),
+        ''
+      ) AS images
+    FROM diadiem dd
+    LEFT JOIN danhgia dg ON dd.id = dg.diadiemid
+    LEFT JOIN danhmuc_diadiem dmdd ON dd.id = dmdd.diadiemid
+    LEFT JOIN danhmuc dm ON dmdd.danhmucid = dm.id
+    LEFT JOIN hinhanh_diadiem ha ON dd.id = ha.DiaDiemId
+    WHERE dd.id = ?
+    GROUP BY dd.id
+  `, [id]);
 
-  if (placeRows.length === 0) {
-    return null;
-  }
+  if (placeRows.length === 0) return null;
 
   const place = placeRows[0];
 
-  // Gallery ảnh
-  const [imageRows] = await db.execute(
-    `
-        SELECT
-            Id AS id,
-            Url AS url,
-            IsPrimary AS isPrimary
-        FROM hinhanh_diadiem
-        WHERE DiaDiemId = ?
-        ORDER BY IsPrimary DESC, Id ASC
-    `,
-    [id],
-  );
+  const [imageRows] = await db.execute(`
+    SELECT
+      Id AS id,
+      TRIM(Url) AS url,
+      IsPrimary AS isPrimary
+    FROM hinhanh_diadiem
+    WHERE DiaDiemId = ?
+      AND Url IS NOT NULL
+      AND TRIM(Url) <> ''
+    ORDER BY IsPrimary DESC, Id ASC
+  `, [id]);
 
-  // Đánh giá + bình luận
-  const [reviewRows] = await db.execute(
-    `
-        SELECT
-            dg.id,
-            dg.sosao,
-            dg.ngaytao,
-            nd.id AS nguoidungid,
-            nd.hoten,
-            bl.id AS binhluanid,
-            bl.noidung,
-            bl.trangthai AS binhluan_trangthai
-        FROM danhgia dg
-        INNER JOIN nguoidung nd ON dg.nguoidungid = nd.id
-        LEFT JOIN binhluan bl ON bl.diadiemid = dg.diadiemid AND bl.nguoidungid = dg.nguoidungid
-        WHERE dg.diadiemid = ?
-        ORDER BY dg.ngaytao DESC
-    `,
-    [id],
-  );
+  const [reviewRows] = await db.execute(`
+    SELECT
+      dg.id,
+      dg.sosao,
+      dg.ngaytao,
+      nd.id AS nguoidungid,
+      nd.hoten,
+      bl.id AS binhluanid,
+      bl.noidung,
+      bl.trangthai AS binhluan_trangthai
+    FROM danhgia dg
+    INNER JOIN nguoidung nd ON dg.nguoidungid = nd.id
+    LEFT JOIN binhluan bl
+      ON bl.diadiemid = dg.diadiemid
+      AND bl.nguoidungid = dg.nguoidungid
+    WHERE dg.diadiemid = ?
+    ORDER BY dg.ngaytao DESC
+  `, [id]);
 
-  // Bình luận không có đánh giá
-  const [commentRows] = await db.execute(
-    `
-        SELECT
-            bl.id,
-            bl.noidung,
-            bl.ngaytao,
-            nd.id AS nguoidungid,
-            nd.hoten
-        FROM binhluan bl
-        INNER JOIN nguoidung nd ON bl.nguoidungid = nd.id
-        WHERE bl.diadiemid = ? AND bl.trangthai = 1
-        ORDER BY bl.ngaytao DESC
-    `,
-    [id],
-  );
+  const [commentRows] = await db.execute(`
+    SELECT
+      bl.id,
+      bl.noidung,
+      bl.ngaytao,
+      nd.id AS nguoidungid,
+      nd.hoten
+    FROM binhluan bl
+    INNER JOIN nguoidung nd ON bl.nguoidungid = nd.id
+    WHERE bl.diadiemid = ?
+      AND bl.trangthai = 1
+    ORDER BY bl.ngaytao DESC
+  `, [id]);
 
   return {
     ...place,
     images: imageRows,
     reviews: reviewRows,
-    comments: commentRows,
+    comments: commentRows
   };
 }

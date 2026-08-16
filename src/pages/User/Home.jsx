@@ -76,7 +76,10 @@ export default function Home() {
 
                 });
 
-                setPlaces(res.data);
+                console.log("Dữ liệu API /places:", res.data);
+console.log("Số địa điểm API trả về:", res.data.length);
+
+setPlaces(res.data);
 
             } catch (error) {
 

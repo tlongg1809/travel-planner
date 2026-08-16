@@ -25,22 +25,76 @@ function PlaceCard({
     onFavoriteChange,
     onRequireLogin
 }) {
-
     const { user, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
     const [liked, setLiked] = useState(isFavorite);
     const [loading, setLoading] = useState(false);
 
-    const imageUrl = place.hinhanh
-        ? `http://localhost/travel-planner/backend/uploads/${place.hinhanh}`
-        : "/placeholder.jpg";
+    useEffect(() => {
+    setLiked(Boolean(isFavorite));
+}, [isFavorite]);
 
+    // =====================================================
+    // XỬ LÝ URL HÌNH ẢNH
+    // =====================================================
+    const getImageUrl = (url) => {
+        if (!url) {
+            return "/placeholder.jpg";
+        }
+
+        let imageUrl = String(url).trim();
+
+        // Nếu API đã trả URL đầy đủ
+        if (
+            imageUrl.startsWith("http://") ||
+            imageUrl.startsWith("https://")
+        ) {
+            return imageUrl;
+        }
+
+        // Chuẩn hóa dấu /
+        imageUrl = imageUrl.replace(/\\/g, "/");
+
+        // Trường hợp DB trả:
+        // /uploads/abc.jpg
+        if (imageUrl.startsWith("/uploads/")) {
+            return `http://localhost/travel-planner/backend${imageUrl}`;
+        }
+
+        // Trường hợp DB trả:
+        // uploads/abc.jpg
+        if (imageUrl.startsWith("uploads/")) {
+            return `http://localhost/travel-planner/backend/${imageUrl}`;
+        }
+
+        // Trường hợp DB chỉ trả:
+        // abc.jpg
+        return `http://localhost/travel-planner/backend/uploads/${imageUrl.replace(
+            /^\/+/,
+            ""
+        )}`;
+    };
+
+
+    // =====================================================
+    // HÌNH ẢNH
+    // =====================================================
+    const imageUrl = getImageUrl(
+        place.hinhanh || place.image
+    );
+
+
+    // =====================================================
+    // DỮ LIỆU
+    // =====================================================
     const price = Number(place.giadukien || 0);
 
     const rating = Number(place.rating || 0);
 
-    const reviewCount = Number(place.review_count || 0);
+    const reviewCount = Number(
+        place.review_count || 0
+    );
 
     const categories = place.categories
         ? place.categories.split(",")
@@ -53,7 +107,6 @@ function PlaceCard({
     // =====================================================
     // CLICK CARD → CHI TIẾT
     // =====================================================
-
     const handleCardClick = () => {
         navigate(`/places/${place.id}`);
     };
@@ -62,9 +115,7 @@ function PlaceCard({
     // =====================================================
     // YÊU THÍCH
     // =====================================================
-
     const handleToggleFavorite = async (e) => {
-
         // Không cho click tim làm click Card
         e.stopPropagation();
 
@@ -76,7 +127,6 @@ function PlaceCard({
         if (loading) return;
 
         try {
-
             setLoading(true);
 
             const res = await toggleFavoritePlace(
@@ -92,18 +142,13 @@ function PlaceCard({
                 place.id,
                 newState
             );
-
         } catch (err) {
-
             console.error(
                 "Lỗi toggle yêu thích:",
                 err
             );
-
         } finally {
-
             setLoading(false);
-
         }
     };
 
@@ -181,7 +226,6 @@ function PlaceCard({
     // =====================================================
     // RENDER
     // =====================================================
-
     return (
         <>
             <div
@@ -196,9 +240,9 @@ function PlaceCard({
     border-gray-100
     shadow-sm
 
-    transition-all
-    duration-300
-    ease-out
+                transition-all
+                duration-300
+                ease-out
 
     hover:-translate-y-2
     hover:border-orange-300
@@ -252,6 +296,7 @@ function PlaceCard({
                         bg-white/90
                         shadow-md
                         transition
+                        hover:scale-105
                         hover:bg-white
                         cursor-pointer
                     "
@@ -281,7 +326,9 @@ function PlaceCard({
                             bottom-3
                             left-3
                             flex
+                            max-w-[90%]
                             gap-2
+                            overflow-hidden
                         "
                         >
 
@@ -372,7 +419,7 @@ function PlaceCard({
 
                     {/* ĐỊA CHỈ */}
 
-                    <div className="mt-3 flex gap-2 text-sm text-gray-500">
+                    <div className="mt-3 flex h-12 gap-2 text-sm text-gray-500">
 
                         <MapPin
                             size={17}
@@ -448,14 +495,15 @@ function PlaceCard({
                         className="
                         mt-4
                         flex
+                        h-11
                         w-full
+                        shrink-0
                         items-center
                         justify-center
                         gap-2
                         rounded-xl
                         bg-orange-500
                         px-4
-                        py-2.5
                         text-sm
                         font-semibold
                         text-white
